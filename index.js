@@ -4,22 +4,32 @@ const {JSDOM} = require('jsdom');
 //const x = require('x-ray')
 
 axios
+    //Get connection in URL
     .get("https://logrocket.com/blog")
     .then(function (response){
-        const dom = new JSDOM(response.data);
-        const result = {}
-        const titlesElement = [... dom.window.document.querySelectorAll('.post-card-title h4')]
-        titlesElement.forEach((t) => result.title = t.textContent)
+        //Convert the structure HTML through JSDOM and take any post
+        const dom = new JSDOM(response.data)
+        const postElement = [... dom.window.document.querySelectorAll('.post-card')]
 
-        const subElement = [... dom.window.document.querySelectorAll('.post-card-subtitle p')]
-        subElement.forEach((s) => result.sub = s.textContent)
+        //Take any part of HTML post
+        const extracted = postElement.map(e =>{
+            const titleElement = e.querySelector('.post-card-title')
+            const title = titleElement.textContent
 
-        console.log(result)
-        /*if (titlesElement.length > 0){
-            titlesElement.forEach((title)=> console.log(`- ${title.textContent}`))
-        }else{
-            console.log('Theres no titles found')
-        }*/
+            const subTitleElement = e.querySelector('.post-card-subtitle')
+            const subTitle = subTitleElement.textContent
+            
+            const cardImgElement = e.querySelector('.post-card-img img')
+            const cardImg = cardImgElement.getAttribute('src')
+
+            const authorNameElement = e.querySelector('.post-card-author-name')
+            const authorName = authorNameElement.textContent
+
+            //Return a object with data inside the array extracted
+            return {title, subTitle, cardImg, authorName, pubDate}
+        })
+        
+        console.log(extracted)
     })
     .catch(function (error){
         console.error('Error', error)
