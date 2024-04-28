@@ -1,7 +1,6 @@
 const axios = require('axios');
 const {JSDOM} = require('jsdom');
 //const puppeteer = require('puppeteer');
-//const x = require('x-ray')
 
 axios
     //Get connection in URL
@@ -25,7 +24,7 @@ axios
             const authorNameElement = e.querySelector('.post-card-author-name')
             const authorName = authorNameElement.textContent
 
-            //Return a object with data inside the array extracted
+            //Return a object with data inside the array 'extracted'
             return {title, subTitle, cardImg, authorName, pubDate}
         })
         
@@ -70,11 +69,4 @@ const parseLogRocketHome = async () => {
 }
 
 parseLogRocketHome()
-*/
-/*
-x('https://logrocket.com/blog', {
-    titles: ['.card-title a']
-})((err, result) => {
-    result.titles.forEach(title => console.log(`- ${title}`));
-});
 */
