@@ -7,12 +7,19 @@ axios
     .get("https://logrocket.com/blog")
     .then(function (response){
         const dom = new JSDOM(response.data);
-        const titles = [... dom.window.document.querySelectorAll('.post-card-title h4')]
-        if (titles.length > 0){
-            titles.forEach((title)=> console.log(`- ${title}`))
+        const result = {}
+        const titlesElement = [... dom.window.document.querySelectorAll('.post-card-title h4')]
+        titlesElement.forEach((t) => result.title = t.textContent)
+
+        const subElement = [... dom.window.document.querySelectorAll('.post-card-subtitle p')]
+        subElement.forEach((s) => result.sub = s.textContent)
+
+        console.log(result)
+        /*if (titlesElement.length > 0){
+            titlesElement.forEach((title)=> console.log(`- ${title.textContent}`))
         }else{
             console.log('Theres no titles found')
-        }
+        }*/
     })
     .catch(function (error){
         console.error('Error', error)
