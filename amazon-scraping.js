@@ -23,8 +23,12 @@ const amazonScraping = async (keyword) =>{
                     const reviewElement = e.querySelector('.a-size-small .a-size-base')
                     const review = reviewElement ? parseInt(reviewElement.textContent.replace(/[.]/g, '')) : 0
 
+                    //const imgUrlElement = e.querySelector('.s-image')
+                    // imgUrl = imgUrlElement.getAttribute('src')
+
                     const imageElement = e.querySelector('.s-image');
                     const imageUrl = imageElement ? imageElement.getAttribute('src') : '';
+
 
                     //Return a object with data inside the array 'extracted'
                     return {title, rating, review, imageUrl}
@@ -37,4 +41,4 @@ const amazonScraping = async (keyword) =>{
         }
 }
 
-amazonScraping('shampoo')
+amazonScraping('brinquedo cachorro')
