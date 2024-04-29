@@ -33,7 +33,6 @@ const amazonScraping = async (keyword) =>{
                     //Return a object with data inside the array 'extracted'
                     return {title, rating, review, imageUrl}
                 })
-                
                 console.log(extracted)
             });
         }catch (error) {
