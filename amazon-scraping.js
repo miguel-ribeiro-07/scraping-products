@@ -1,43 +1,56 @@
 const express = require('express')
 const axios = require('axios');
 const {JSDOM} = require('jsdom');
+const app = express()
+
+app.set('port', 8000)
 
 const amazonScraping = async (keyword) =>{
     try {
-     await axios
-        //Get connection in URL
-            .get(`https://www.amazon.com.br/s?k=${encodeURIComponent(keyword)}`)
-            .then((response) => {
-                //Convert the structure HTML through JSDOM and take any post
-                const dom = new JSDOM(response.data)
-                const postElement = [... dom.window.document.querySelectorAll('.s-result-item')]
+        const {data} = await axios.get(`https://www.amazon.com.br/s?k=${encodeURIComponent(keyword)}}`)
+        //Convert the structure HTML through JSDOM and take any post
+        const dom = new JSDOM(data)
+        const postElement = [... dom.window.document.querySelectorAll('.s-result-item')]
 
-                //Take any part of HTML post
-                const extracted = postElement.map(e =>{
-                    const titleElement = e.querySelector('h2 a span')
-                    const title = titleElement ? titleElement.textContent : ''
+        //Take any part of HTML post
+        const extracted = postElement.map(e =>{
 
-                    const ratingElement = e.querySelector('.a-icon-star-small span')
-                    const rating = ratingElement ? parseFloat(ratingElement.textContent.split(' ')[0]) : 0
+            // Searching through tag in the DOM in order <h2> -> <a> -> <span>
+            const titleElement = e.querySelector('h2 a span')
+            const title = titleElement ? titleElement.textContent : ''
 
-                    const reviewElement = e.querySelector('.a-size-small .a-size-base')
-                    const review = reviewElement ? parseInt(reviewElement.textContent.replace(/[.]/g, '')) : 0
+            //Split for pick the only first number of rating
+            const ratingElement = e.querySelector('.a-icon-star-small span')
+            const rating = ratingElement ? parseFloat(ratingElement.textContent.split(' ')[0]) : 0
 
-                    //const imgUrlElement = e.querySelector('.s-image')
-                    // imgUrl = imgUrlElement.getAttribute('src')
+            //Used dot twice for feach two class names
+            const reviewElement = e.querySelector('.a-size-small .a-size-base')
+            const review = reviewElement ? parseInt(reviewElement.textContent.replace(/[.]/g, '')) : 0
 
-                    const imageElement = e.querySelector('.s-image');
-                    const imageUrl = imageElement ? imageElement.getAttribute('src') : '';
+            const imageElement = e.querySelector('.s-image');
+            const imageUrl = imageElement ? imageElement.getAttribute('src') : '';
 
 
-                    //Return a object with data inside the array 'extracted'
-                    return {title, rating, review, imageUrl}
-                })
-                console.log(extracted)
-            });
+            //Return a object with data inside the array 'extracted'
+            return {title, rating, review, imageUrl}
+        })
+        return extracted
         }catch (error) {
             console.log('Error: ', error)
+            return []
         }
 }
 
-amazonScraping('brinquedo cachorro')
+app.get('/api/scrape', async (req, res) =>{
+    const {keyword} = req.query
+    try {
+        const finalData =  await amazonScraping(keyword)
+        res.json(finalData)
+    }catch (error){
+        res.status(400).json('Error:', error)
+    }
+})
+
+app.listen(app.get('port'), () =>{
+    console.log(`Servidor rodando na porta ${app.get('port')}`)
+})
