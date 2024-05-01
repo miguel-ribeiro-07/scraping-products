@@ -1,13 +1,70 @@
 <html>
     <head>
         <title>Scraping test</title>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <h1>
             Lets WebScrap Amazon Products!
         </h1>
-        <p>
-            
+        <div id="main-div">
+        <input  type="text" placeholder="Search some Products" id="keyw">
+        <button  onclick=search() id="button-search"> Do it!</button>
+        </div>
+        <div id="results"></div>
+        <script>
+            const search = () =>{
+                const button = document.getElementById("button-search")
+                const keyw = document.getElementById("keyw").value
+
+                if (!keyw){
+                    alert('Without keyword!')
+                }else{
+                    const xhr = new XMLHttpRequest();
+
+                    const url = `http://localhost:8000/api/scrape/?keyword=${keyw}`
+                    xhr.open("GET", url, true)
+                    xhr.onreadystatechange = () =>{
+                        if(xhr.readyState == 4 && xhr.status == 200){
+                            const data = JSON.parse(xhr.responseText)
+                            displayData(data)
+                        }
+                    }
+                    xhr.send()
+                }
+
+                const displayData = (data) =>{
+                    var resultsDiv = document.getElementById("results")
+                    resultsDiv.innerHTML = ""
+
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = "<p>No results found.</p>"
+                        return
+                    }
+
+                    var ul = document.createElement("ul")
+                    data.forEach(function(result){
+                        var title = document.createElement("li")
+                        var rating = document.createElement("li")
+                        var review = document.createElement("li")
+                        var img = document.createElement("img")
+                        if (result.title != '') {
+                            title.textContent = 'Produto :' + result.title
+                            rating.textContent = `${result.rating} de 5`
+                            review.textContent = 'Avaliações: ' + result.review
+                            img.src = result.imageUrl
+
+                            ul.appendChild(title)
+                            ul.appendChild(rating)
+                            ul.appendChild(review)
+                            ul.appendChild(img)
+                        }
+                    })
+                    resultsDiv.appendChild(ul)
+                }
+            }
+        </script>
+        <p> 
         </p>
     </body>
 </html>

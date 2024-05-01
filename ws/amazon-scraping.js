@@ -2,8 +2,16 @@ const express = require('express')
 const axios = require('axios');
 const {JSDOM} = require('jsdom');
 const app = express()
-
+const cors = require('cors')
 app.set('port', 8000)
+
+const corsOptions = {
+    origin:'http://localhost:5500',
+    credentials: true,
+    optionSuccessStatus:200
+}
+
+app.use(cors(corsOptions))
 
 const amazonScraping = async (keyword) =>{
     try {
